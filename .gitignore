@@ -1,6 +1,5 @@
 # Miscellaneous
 *.class
-*.lock
 *.log
 .DS_Store
 .vscode/
