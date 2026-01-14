@@ -27,6 +27,7 @@ const AssetSchema = CollectionSchema(
     r'package': PropertySchema(id: 2, name: r'package', type: IsarType.string),
     r'version': PropertySchema(id: 3, name: r'version', type: IsarType.string),
   },
+
   estimateSize: _assetEstimateSize,
   serialize: _assetSerialize,
   deserialize: _assetDeserialize,
@@ -59,10 +60,11 @@ const AssetSchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {},
+
   getId: _assetGetId,
   getLinks: _assetGetLinks,
   attach: _assetAttach,
-  version: '3.2.0-dev.2',
+  version: '3.3.0',
 );
 
 int _assetEstimateSize(

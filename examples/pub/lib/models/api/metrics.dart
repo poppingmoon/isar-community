@@ -8,7 +8,7 @@ class ApiPackageMetrics {
     required this.grantedPoints,
     required this.maxPoints,
     required this.likeCount,
-    required this.popularityScore,
+    this.popularityScore,
     required this.tags,
   });
 
@@ -21,7 +21,7 @@ class ApiPackageMetrics {
 
   final int likeCount;
 
-  final double popularityScore;
+  final double? popularityScore;
 
   final List<String> tags;
 }

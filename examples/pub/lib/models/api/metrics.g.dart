@@ -11,6 +11,6 @@ ApiPackageMetrics _$ApiPackageMetricsFromJson(Map<String, dynamic> json) =>
       grantedPoints: (json['grantedPoints'] as num).toInt(),
       maxPoints: (json['maxPoints'] as num).toInt(),
       likeCount: (json['likeCount'] as num).toInt(),
-      popularityScore: (json['popularityScore'] as num).toDouble(),
+      popularityScore: (json['popularityScore'] as num?)?.toDouble(),
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
     );

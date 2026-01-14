@@ -28,16 +28,15 @@ flutter:
   plugin:
     platforms:
       android:
-        package: dev.isar.isar_flutter_libs
-        pluginClass: IsarFlutterLibsPlugin
+        ffiPlugin: true
       ios:
-        pluginClass: IsarFlutterLibsPlugin
+        ffiPlugin: true
       macos:
-        pluginClass: IsarFlutterLibsPlugin
+        ffiPlugin: true
       linux:
-        pluginClass: IsarFlutterLibsPlugin
+        ffiPlugin: true
       windows:
-        pluginClass: IsarFlutterLibsPlugin
+        ffiPlugin: true
 
 dependency_overrides:
   isar_community:

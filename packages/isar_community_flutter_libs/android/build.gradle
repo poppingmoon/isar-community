@@ -30,6 +30,9 @@ android {
     }
 }
 
-dependencies {
-    implementation "androidx.startup:startup-runtime:1.1.1"
+apply from: "../cargokit/gradle/plugin.gradle"
+
+cargokit {
+    manifestDir = "../../isar_core_ffi"
+    libname = "isar"
 }

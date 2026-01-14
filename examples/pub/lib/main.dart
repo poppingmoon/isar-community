@@ -9,7 +9,16 @@ void main() {
   runApp(ProviderScope(child: PubApp()));
 }
 
-final darkModePod = StateProvider((ref) => false);
+class DarkModeNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void setDarkMode(bool darkMode) => state = darkMode;
+}
+
+final darkModePod = NotifierProvider<DarkModeNotifier, bool>(
+  DarkModeNotifier.new,
+);
 
 class PubApp extends ConsumerWidget {
   PubApp({super.key});
@@ -19,18 +28,20 @@ class PubApp extends ConsumerWidget {
       GoRoute(path: '/', builder: (context, state) => const HomePage()),
       GoRoute(
         path: '/packages/:package',
-        builder: (context, state) => DetailPage(name: state.params['package']!),
+        builder: (context, state) =>
+            DetailPage(name: state.pathParameters['package']!),
       ),
       GoRoute(
         path: '/packages/:package/versions/:version',
         builder: (context, state) => DetailPage(
-          name: state.params['package']!,
-          version: state.params['version'],
+          name: state.pathParameters['package']!,
+          version: state.pathParameters['version'],
         ),
       ),
       GoRoute(
         path: '/search/:query',
-        builder: (context, state) => SearchPage(query: state.params['query']!),
+        builder: (context, state) =>
+            SearchPage(query: state.pathParameters['query']!),
       ),
     ],
   );

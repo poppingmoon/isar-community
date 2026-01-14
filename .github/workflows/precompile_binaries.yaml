@@ -1,0 +1,119 @@
+name: Precompile Binaries
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  precompile-android:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    env:
+      NDK_VERSION: 28.2.13676358
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install g++-multilib libgtk-3-dev
+
+      - name: Set environment variables
+        run: |
+          NDK=$ANDROID_SDK_ROOT/ndk/${{ env.NDK_VERSION }}
+          COMPILER_DIR=$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin
+          echo $COMPILER_DIR >> $GITHUB_PATH
+          echo CC_i686_linux_android=$COMPILER_DIR/i686-linux-android21-clang >> $GITHUB_ENV
+          echo AR_i686_linux_android=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CARGO_TARGET_I686_LINUX_ANDROID_LINKER=$COMPILER_DIR/i686-linux-android21-clang >> $GITHUB_ENV
+          echo CARGO_TARGET_I686_LINUX_ANDROID_AR=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CC_x86_64_linux_android=$COMPILER_DIR/x86_64-linux-android21-clang >> $GITHUB_ENV
+          echo AR_x86_64_linux_android=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CARGO_TARGET_X86_64_LINUX_ANDROID_LINKER=$COMPILER_DIR/x86_64-linux-android21-clang >> $GITHUB_ENV
+          echo CARGO_TARGET_X86_64_LINUX_ANDROID_AR=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CC_armv7_linux_androideabi=$COMPILER_DIR/armv7a-linux-androideabi21-clang >> $GITHUB_ENV
+          echo AR_armv7_linux_androideabi=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER=$COMPILER_DIR/armv7a-linux-androideabi21-clang >> $GITHUB_ENV
+          echo CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_AR=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CC_aarch64_linux_android=$COMPILER_DIR/aarch64-linux-android21-clang >> $GITHUB_ENV
+          echo AR_aarch64_linux_android=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$COMPILER_DIR/aarch64-linux-android21-clang >> $GITHUB_ENV
+          echo CARGO_TARGET_AARCH64_LINUX_ANDROID_AR=$COMPILER_DIR/llvm-ar >> $GITHUB_ENV
+          echo BINDGEN_EXTRA_CLANG_ARGS=--sysroot=$NDK/toolchains/llvm/prebuilt/linux-x86_64/sysroot >> $GITHUB_ENV
+
+      - name: Precompile
+        working-directory: packages/isar_community_flutter_libs/cargokit/build_tool
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+        run: >
+          dart run build_tool precompile-binaries -v
+          --manifest-dir=../../../isar_core_ffi
+          --repository=poppingmoon/isar-community
+          --android-sdk-location=/usr/local/lib/android/sdk
+          --android-ndk-version=${{ env.NDK_VERSION }}
+          --android-min-sdk-version=24
+          --target aarch64-linux-android
+          --target armv7-linux-androideabi
+          --target i686-linux-android
+          --target x86_64-linux-android
+
+  precompile-ios-and-macos:
+    runs-on: macos-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Precompile
+        working-directory: packages/isar_community_flutter_libs/cargokit/build_tool
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          IPHONEOS_DEPLOYMENT_TARGET: 13.0
+        run: >
+          dart run build_tool precompile-binaries
+          -v
+          --manifest-dir ../../../isar_core_ffi
+          --repository poppingmoon/isar-community
+
+  precompile:
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-24.04-arm
+          - ubuntu-latest
+          - windows-latest
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Precompile
+        working-directory: packages/isar_community_flutter_libs/cargokit/build_tool
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+        run: >
+          dart run build_tool precompile-binaries
+          -v
+          --manifest-dir ../../../isar_core_ffi
+          --repository poppingmoon/isar-community

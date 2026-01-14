@@ -22,6 +22,7 @@ const PackageSchema = CollectionSchema(
       id: 1,
       name: r'dependencies',
       type: IsarType.objectList,
+
       target: r'Dependency',
     ),
     r'description': PropertySchema(
@@ -33,6 +34,7 @@ const PackageSchema = CollectionSchema(
       id: 3,
       name: r'devDependencies',
       type: IsarType.objectList,
+
       target: r'Dependency',
     ),
     r'documentation': PropertySchema(
@@ -84,6 +86,7 @@ const PackageSchema = CollectionSchema(
     ),
     r'version': PropertySchema(id: 18, name: r'version', type: IsarType.string),
   },
+
   estimateSize: _packageEstimateSize,
   serialize: _packageSerialize,
   deserialize: _packageDeserialize,
@@ -111,10 +114,11 @@ const PackageSchema = CollectionSchema(
   },
   links: {},
   embeddedSchemas: {r'Dependency': DependencySchema},
+
   getId: _packageGetId,
   getLinks: _packageGetLinks,
   attach: _packageAttach,
-  version: '3.2.0-dev.2',
+  version: '3.3.0',
 );
 
 int _packageEstimateSize(
@@ -2045,6 +2049,7 @@ extension PackageQueryFilter
         FilterCondition.equalTo(
           property: r'popularity',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -2062,6 +2067,7 @@ extension PackageQueryFilter
           include: include,
           property: r'popularity',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -2079,6 +2085,7 @@ extension PackageQueryFilter
           include: include,
           property: r'popularity',
           value: value,
+
           epsilon: epsilon,
         ),
       );
@@ -2100,6 +2107,7 @@ extension PackageQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
+
           epsilon: epsilon,
         ),
       );
@@ -3163,6 +3171,7 @@ const DependencySchema = Schema(
     ),
     r'name': PropertySchema(id: 1, name: r'name', type: IsarType.string),
   },
+
   estimateSize: _dependencyEstimateSize,
   serialize: _dependencySerialize,
   deserialize: _dependencyDeserialize,
@@ -3514,50 +3523,3 @@ extension DependencyQueryFilter
 
 extension DependencyQueryObject
     on QueryBuilder<Dependency, Dependency, QFilterCondition> {}
-
-// Extension to add copyWith method to Package
-extension PackageCopyWith on Package {
-  Package copyWith({
-    String? name,
-    String? version,
-    bool? isLatest,
-    String? homepage,
-    String? documentation,
-    String? description,
-    List<Dependency>? dependencies,
-    List<Dependency>? devDependencies,
-    DateTime? published,
-    short? points,
-    short? likes,
-    float? popularity,
-    String? publisher,
-    bool? dart,
-    bool? flutter,
-    bool? flutterFavorite,
-    String? license,
-    bool? osiLicense,
-    List<SupportedPlatform>? platforms,
-  }) {
-    return Package(
-      name: name ?? this.name,
-      version: version ?? this.version,
-      isLatest: isLatest ?? this.isLatest,
-      homepage: homepage ?? this.homepage,
-      documentation: documentation ?? this.documentation,
-      description: description ?? this.description,
-      dependencies: dependencies ?? this.dependencies,
-      devDependencies: devDependencies ?? this.devDependencies,
-      published: published ?? this.published,
-      points: points ?? this.points,
-      likes: likes ?? this.likes,
-      popularity: popularity ?? this.popularity,
-      publisher: publisher ?? this.publisher,
-      dart: dart ?? this.dart,
-      flutter: flutter ?? this.flutter,
-      flutterFavorite: flutterFavorite ?? this.flutterFavorite,
-      license: license ?? this.license,
-      osiLicense: osiLicense ?? this.osiLicense,
-      platforms: platforms ?? this.platforms,
-    );
-  }
-}

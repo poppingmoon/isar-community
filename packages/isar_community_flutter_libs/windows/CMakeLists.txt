@@ -2,20 +2,15 @@ cmake_minimum_required(VERSION 3.14)
 set(PROJECT_NAME "isar_community_flutter_libs")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-# This value is used when generating builds using this plugin, so it must
-# not be changed
-set(PLUGIN_NAME "isar_community_flutter_libs_plugin")
+include("../cargokit/cmake/cargokit.cmake")
+apply_cargokit(${PROJECT_NAME} packages/isar_core_ffi isar "")
 
-add_library(${PLUGIN_NAME} SHARED
-  "isar_community_flutter_libs_plugin.cpp"
+add_custom_command(
+  TARGET ${PROJECT_NAME}_cargokit POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy
+    "${${PROJECT_NAME}_cargokit_lib}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libisar.dll"
 )
-apply_standard_settings(${PLUGIN_NAME})
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(isar_community_flutter_libs_bundled_libraries
