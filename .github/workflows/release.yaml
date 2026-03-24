@@ -75,7 +75,7 @@ jobs:
       - name: Build binary
         run: bash tool/${{ matrix.script }}
       - name: Upload binary to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_name }}
