@@ -28,3 +28,5 @@ dirs = "4.0.0"
 
 [lib]
 crate-type = ["staticlib", "cdylib"]
+
+# 3.3.2
