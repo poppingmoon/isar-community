@@ -140,12 +140,10 @@ class Package {
   }
 
   Package copyWithMetrics(ApiPackageMetrics metrics) {
-    final publishers = metrics.tags
-        .where((t) => t.startsWith('publisher:'))
-        .toList();
-    final publisher = publishers.isNotEmpty
-        ? publishers.first.substring(10)
-        : null;
+    final publishers =
+        metrics.tags.where((t) => t.startsWith('publisher:')).toList();
+    final publisher =
+        publishers.isNotEmpty ? publishers.first.substring(10) : null;
     return copyWith(
       points: metrics.grantedPoints,
       likes: metrics.likeCount,
@@ -193,9 +191,8 @@ class Dependency {
     final dependencies = <Dependency>[];
     for (final package in dependenciesMap.keys) {
       final dep = dependenciesMap[package]!;
-      final constraint = dep is HostedReference
-          ? dep.versionConstraint.toString()
-          : 'unknown';
+      final constraint =
+          dep is HostedReference ? dep.versionConstraint.toString() : 'unknown';
       dependencies.add(Dependency(name: package, constraint: constraint));
     }
 
