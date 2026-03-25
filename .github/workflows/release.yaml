@@ -17,7 +17,7 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2022]
         sdk: [3.0.0]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -65,7 +65,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Prepare Build
         uses: ./.github/actions/prepare-build
       - name: Display Rust version
@@ -75,7 +75,7 @@ jobs:
       - name: Build binary
         run: bash tool/${{ matrix.script }}
       - name: Upload binary to artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_name }}
@@ -98,7 +98,7 @@ jobs:
     needs: build_binaries
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: binaries/
       - name: List contents of downloaded artifacts
@@ -183,7 +183,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Delete release on failure
         run: |
           echo "One or more jobs failed. Deleting release ${{ github.ref_name }}"

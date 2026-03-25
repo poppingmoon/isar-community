@@ -13,7 +13,7 @@ jobs:
     name: Version Display
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -24,7 +24,7 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -48,7 +48,7 @@ jobs:
     name: Check lints
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -80,7 +80,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - run: echo "$OSTYPE"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-24.04
     if: ${{ false }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -131,7 +131,7 @@ jobs:
     name: Code Coverage
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -156,11 +156,11 @@ jobs:
           flutter test --coverage ../isar_test/test --coverage-path lcov_isar_test.info
         working-directory: packages/isar_community
       - name: Upload isar Coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: packages/isar_community/lcov_isar.info
       - name: Upload isar_test Coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: packages/isar_community/lcov_isar_test.info
 
@@ -168,7 +168,7 @@ jobs:
     name: Generator Test
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -182,7 +182,7 @@ jobs:
     name: Integration Test iOS
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Start simulator
         uses: futureware-tech/simulator-action@v5
         with:
@@ -210,8 +210,8 @@ jobs:
     name: Integration Test Android
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
         with:
           java-version: '17'
           distribution: 'zulu'
@@ -257,7 +257,7 @@ jobs:
     name: Integration Test macOS
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           # flutter-version: "3.3.10" # https://github.com/flutter/flutter/issues/118469
@@ -283,7 +283,7 @@ jobs:
     name: Integration Test Linux
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -314,7 +314,7 @@ jobs:
     runs-on: windows-2022
     # if: ${{ false }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
