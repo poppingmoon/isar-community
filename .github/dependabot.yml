@@ -4,3 +4,14 @@ updates:
     directory: /
     schedule:
       interval: daily
+
+  - package-ecosystem: pub
+    directory: /examples/pub
+    schedule:
+      interval: daily
+    groups:
+      isar-community:
+        patterns:
+          - "*"
+    allow:
+      - dependency-name: isar_community*
