@@ -6,6 +6,7 @@ import 'package:isar_community/isar.dart';
 import 'package:isar_community/src/common/isar_link_base_impl.dart';
 import 'package:isar_community/src/common/isar_link_common.dart';
 import 'package:isar_community/src/common/isar_links_common.dart';
+import 'package:isar_community/src/native/bindings.dart';
 import 'package:isar_community/src/native/isar_collection_impl.dart';
 import 'package:isar_community/src/native/isar_core.dart';
 import 'package:isar_community/src/native/txn.dart';
@@ -46,7 +47,7 @@ mixin IsarLinkBaseMixin<OBJ> on IsarLinkBaseImpl<OBJ> {
         ids[linkList.length + i] = requireGetId(unlinkList[i]);
       }
 
-      IC.isar_link_update_all(
+      isar_link_update_all(
         sourceCollection.ptr,
         txn.ptr,
         linkId,
@@ -70,7 +71,7 @@ mixin IsarLinkBaseMixin<OBJ> on IsarLinkBaseImpl<OBJ> {
     targetCollection.isar.getTxnSync(true, (Txn txn) {
       if (reset) {
         nCall(
-          IC.isar_link_unlink_all(
+          isar_link_unlink_all(
             sourceCollection.ptr,
             txn.ptr,
             linkId,
@@ -89,13 +90,13 @@ mixin IsarLinkBaseMixin<OBJ> on IsarLinkBaseImpl<OBJ> {
         }
 
         nCall(
-          IC.isar_link(sourceCollection.ptr, txn.ptr, linkId, containingId, id),
+          isar_link(sourceCollection.ptr, txn.ptr, linkId, containingId, id),
         );
       }
       for (final object in unlink) {
         final unlinkId = requireGetId(object);
         nCall(
-          IC.isar_link_unlink(
+          isar_link_unlink(
             sourceCollection.ptr,
             txn.ptr,
             linkId,

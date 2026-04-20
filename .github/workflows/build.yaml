@@ -1,0 +1,148 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runner }}
+
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            os: android
+            architecture: arm
+            target-triple: armv7-linux-androideabi
+          - runner: ubuntu-latest
+            os: android
+            architecture: arm64
+            target-triple: aarch64-linux-android
+          - runner: ubuntu-latest
+            os: android
+            architecture: x64
+            target-triple: x86_64-linux-android
+          - runner: ubuntu-latest
+            os: linux
+            architecture: x64
+            target-triple: x86_64-unknown-linux-gnu
+          - runner: ubuntu-24.04-arm
+            os: linux
+            architecture: arm64
+            target-triple: aarch64-unknown-linux-gnu
+          - runner: macos-latest
+            os: macos
+            architecture: arm64
+            target-triple: aarch64-apple-darwin
+          - runner: macos-latest
+            os: macos
+            architecture: x64
+            target-triple: x86_64-apple-darwin
+          - runner: macos-latest
+            os: ios
+            ios-sdk: iphoneos
+            architecture: arm64
+            target-triple: aarch64-apple-ios
+          - runner: macos-latest
+            os: ios
+            ios-sdk: iphonesimulator
+            architecture: arm64
+            target-triple: aarch64-apple-ios-sim
+          - runner: macos-latest
+            os: ios
+            ios-sdk: iphonesimulator
+            architecture: x64
+            target-triple: x86_64-apple-ios
+          - runner: windows-latest
+            os: windows
+            architecture: arm64
+            target-triple: aarch64-pc-windows-msvc
+          - runner: windows-latest
+            os: windows
+            architecture: x64
+            target-triple: x86_64-pc-windows-msvc
+      fail-fast: false
+
+    env:
+      ANDROID_TARGET_NDK_API: 24
+      NDK_VERSION: 28.2.13676358
+      IOS_TARGET_VERSION: 13
+      IPHONEOS_DEPLOYMENT_TARGET: 13.0
+      MACOS_TARGET_VERSION: 13
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+
+      - name: Get dependencies
+        working-directory: packages/isar_community
+        run: dart pub get
+
+      - name: Get compiler path
+        id: get-compiler-path
+        if: matrix.os == 'android'
+        working-directory: packages/isar_community
+        run: |
+          NDK=$ANDROID_SDK_ROOT/ndk/${{ env.NDK_VERSION }}
+          COMPILER_DIR=$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin
+          echo archiver=$COMPILER_DIR/llvm-ar >> $GITHUB_OUTPUT
+          case ${{ matrix.architecture }} in
+            arm) echo compiler=$COMPILER_DIR/armv7a-linux-androideabi21-clang >> $GITHUB_OUTPUT;;
+            arm64) echo compiler=$COMPILER_DIR/aarch64-linux-android21-clang >> $GITHUB_OUTPUT;;
+            x64) echo compiler=$COMPILER_DIR/x86_64-linux-android21-clang >> $GITHUB_OUTPUT;;
+          esac
+          echo linker=$COMPILER_DIR/lld >> $GITHUB_OUTPUT
+
+      - name: Allow long path
+        if: matrix.runner == 'windows-latest'
+        run: git config --global core.longpaths true
+
+      - name: Build
+        working-directory: packages/isar_community
+        run: >
+          dart tool/build.dart
+          --os ${{ matrix.os }}
+          --architecture ${{ matrix.architecture }}
+          ${{ case(matrix.os == 'android', format('--android-target-ndk-api {0}', env.ANDROID_TARGET_NDK_API), '') }}
+          ${{ case(matrix.os == 'ios', format('--ios-sdk {0}', matrix.ios-sdk), '') }}
+          ${{ case(matrix.os == 'ios', format('--ios-target-version {0}', env.IOS_TARGET_VERSION), '') }}
+          ${{ case(matrix.os == 'macos', format('--macos-target-version {0}', env.MACOS_TARGET_VERSION), '') }}
+          ${{ case(matrix.os == 'android', format('--archiver {0}', steps.get-compiler-path.outputs.archiver), '') }}
+          ${{ case(matrix.os == 'android', format('--compiler {0}', steps.get-compiler-path.outputs.compiler), '') }}
+          ${{ case(matrix.os == 'android', format('--linker {0}', steps.get-compiler-path.outputs.linker), '') }}
+          --add-target-triple
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: |
+            packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.dll
+            packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.dylib
+            packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.so
+          archive: false
+
+  release:
+    runs-on: ubuntu-latest
+
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    needs: build
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+
+      - name: Release
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+        with:
+          files: '**'

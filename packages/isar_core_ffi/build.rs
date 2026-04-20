@@ -35,10 +35,6 @@ fn main() {
         .unwrap_or_else(|| "unknown".to_string());
 
     write!(&mut f, "const ISAR_VERSION: &str = \"{version}\0\";").unwrap();
-    write!(
-        &mut f,
-        "const MDBX_VERSION: &str = \"{mdbx_tag}\0\";"
-    )
-    .unwrap();
+    write!(&mut f, "const MDBX_VERSION: &str = \"{mdbx_tag}\0\";").unwrap();
     println!("cargo:rerun-if-env-changed=ISAR_VERSION");
 }

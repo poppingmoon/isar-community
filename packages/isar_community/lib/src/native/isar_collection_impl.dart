@@ -98,11 +98,12 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
         final buffer = cObj.buffer.asTypedList(cObj.buffer_length);
         values.add(
           schema.deserializeProp(
-            IsarReaderImpl(buffer),
-            propertyId,
-            propertyOffset,
-            isar.offsets,
-          ) as T,
+                IsarReaderImpl(buffer),
+                propertyId,
+                propertyOffset,
+                isar.offsets,
+              )
+              as T,
         );
       }
     } else {
@@ -153,7 +154,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       for (var i = 0; i < ids.length; i++) {
         (objectsPtr + i).ref.id = ids[i];
       }
-      IC.isar_get_all(ptr, txn.ptr, cObjSetPtr);
+      isar_get_all(ptr, txn.ptr, cObjSetPtr);
       await txn.wait();
       return deserializeObjectsOrNull(cObjSetPtr.ref);
     });
@@ -168,7 +169,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final objects = List<OBJ?>.filled(ids.length, null);
       for (var i = 0; i < ids.length; i++) {
         cObj.id = ids[i];
-        nCall(IC.isar_get(ptr, txn.ptr, cObjPtr));
+        nCall(isar_get(ptr, txn.ptr, cObjPtr));
         objects[i] = deserializeObjectOrNull(cObj);
       }
 
@@ -181,7 +182,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
     return isar.getTxn(false, (Txn txn) async {
       final cObjSetPtr = txn.newCObjectSet(keys.length);
       final keysPtrPtr = _getKeysPtr(indexName, keys, txn.alloc);
-      IC.isar_get_all_by_index(
+      isar_get_all_by_index(
         ptr,
         txn.ptr,
         schema.index(indexName).id,
@@ -204,7 +205,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final objects = List<OBJ?>.filled(keys.length, null);
       for (var i = 0; i < keys.length; i++) {
         final keyPtr = buildIndexKey(schema, index, keys[i]);
-        nCall(IC.isar_get_by_index(ptr, txn.ptr, index.id, keyPtr, cObjPtr));
+        nCall(isar_get_by_index(ptr, txn.ptr, index.id, keyPtr, cObjPtr));
         objects[i] = deserializeObjectOrNull(cObj);
       }
 
@@ -255,9 +256,9 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
     cObj.id = schema.getId(object);
 
     if (indexId != null) {
-      nCall(IC.isar_put_by_index(ptr, txn.ptr, indexId, cObjPtr));
+      nCall(isar_put_by_index(ptr, txn.ptr, indexId, cObjPtr));
     } else {
-      nCall(IC.isar_put(ptr, txn.ptr, cObjPtr));
+      nCall(isar_put(ptr, txn.ptr, cObjPtr));
     }
 
     final id = cObj.id;
@@ -291,9 +292,9 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       serializeObjects(txn, cObjSetPtr.ref.objects, objects);
 
       if (indexId != null) {
-        IC.isar_put_all_by_index(ptr, txn.ptr, indexId, cObjSetPtr);
+        isar_put_all_by_index(ptr, txn.ptr, indexId, cObjSetPtr);
       } else {
-        IC.isar_put_all(ptr, txn.ptr, cObjSetPtr);
+        isar_put_all(ptr, txn.ptr, cObjSetPtr);
       }
 
       await txn.wait();
@@ -339,7 +340,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final idsPtr = txn.alloc<Int64>(ids.length);
       idsPtr.asTypedList(ids.length).setAll(0, ids);
 
-      IC.isar_delete_all(ptr, txn.ptr, idsPtr, ids.length, countPtr);
+      isar_delete_all(ptr, txn.ptr, idsPtr, ids.length, countPtr);
       await txn.wait();
 
       return countPtr.value;
@@ -353,7 +354,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
 
       var counter = 0;
       for (var i = 0; i < ids.length; i++) {
-        nCall(IC.isar_delete(ptr, txn.ptr, ids[i], deletedPtr));
+        nCall(isar_delete(ptr, txn.ptr, ids[i], deletedPtr));
         if (deletedPtr.value) {
           counter++;
         }
@@ -368,7 +369,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final countPtr = txn.alloc<Uint32>();
       final keysPtrPtr = _getKeysPtr(indexName, keys, txn.alloc);
 
-      IC.isar_delete_all_by_index(
+      isar_delete_all_by_index(
         ptr,
         txn.ptr,
         schema.index(indexName).id,
@@ -389,7 +390,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final keysPtrPtr = _getKeysPtr(indexName, keys, txn.alloc);
 
       nCall(
-        IC.isar_delete_all_by_index(
+        isar_delete_all_by_index(
           ptr,
           txn.ptr,
           schema.index(indexName).id,
@@ -405,7 +406,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   @override
   Future<void> clear() {
     return isar.getTxn(true, (Txn txn) async {
-      IC.isar_clear(ptr, txn.ptr);
+      isar_clear(ptr, txn.ptr);
       await txn.wait();
     });
   }
@@ -413,7 +414,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   @override
   void clearSync() {
     isar.getTxnSync(true, (Txn txn) {
-      nCall(IC.isar_clear(ptr, txn.ptr));
+      nCall(isar_clear(ptr, txn.ptr));
     });
   }
 
@@ -430,7 +431,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       bytesPtr.asTypedList(jsonBytes.length).setAll(0, jsonBytes);
       final idNamePtr = schema.idName.toCString(txn.alloc);
 
-      IC.isar_json_import(ptr, txn.ptr, idNamePtr, bytesPtr, jsonBytes.length);
+      isar_json_import(ptr, txn.ptr, idNamePtr, bytesPtr, jsonBytes.length);
       await txn.wait();
     });
   }
@@ -449,13 +450,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final idNamePtr = schema.idName.toCString(txn.alloc);
 
       nCall(
-        IC.isar_json_import(
-          ptr,
-          txn.ptr,
-          idNamePtr,
-          bytesPtr,
-          jsonBytes.length,
-        ),
+        isar_json_import(ptr, txn.ptr, idNamePtr, bytesPtr, jsonBytes.length),
       );
     });
   }
@@ -464,7 +459,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   Future<int> count() {
     return isar.getTxn(false, (Txn txn) async {
       final countPtr = txn.alloc<Int64>();
-      IC.isar_count(ptr, txn.ptr, countPtr);
+      isar_count(ptr, txn.ptr, countPtr);
       await txn.wait();
       return countPtr.value;
     });
@@ -474,7 +469,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   int countSync() {
     return isar.getTxnSync(false, (Txn txn) {
       final countPtr = txn.alloc<Int64>();
-      nCall(IC.isar_count(ptr, txn.ptr, countPtr));
+      nCall(isar_count(ptr, txn.ptr, countPtr));
       return countPtr.value;
     });
   }
@@ -486,7 +481,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   }) {
     return isar.getTxn(false, (Txn txn) async {
       final sizePtr = txn.alloc<Int64>();
-      IC.isar_get_size(ptr, txn.ptr, includeIndexes, includeLinks, sizePtr);
+      isar_get_size(ptr, txn.ptr, includeIndexes, includeLinks, sizePtr);
       await txn.wait();
       return sizePtr.value;
     });
@@ -496,9 +491,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   int getSizeSync({bool includeIndexes = false, bool includeLinks = false}) {
     return isar.getTxnSync(false, (Txn txn) {
       final sizePtr = txn.alloc<Int64>();
-      nCall(
-        IC.isar_get_size(ptr, txn.ptr, includeIndexes, includeLinks, sizePtr),
-      );
+      nCall(isar_get_size(ptr, txn.ptr, includeIndexes, includeLinks, sizePtr));
       return sizePtr.value;
     });
   }
@@ -507,14 +500,14 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
   Stream<void> watchLazy({bool fireImmediately = false}) {
     isar.requireOpen();
     final port = ReceivePort();
-    final handle = IC.isar_watch_collection(
+    final handle = isar_watch_collection(
       isar.ptr,
       ptr,
       port.sendPort.nativePort,
     );
     final controller = StreamController<void>(
       onCancel: () {
-        IC.isar_stop_watching(handle);
+        isar_stop_watching(handle);
         port.close();
       },
     );
@@ -541,7 +534,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
     final cObjPtr = malloc<CObject>();
 
     final port = ReceivePort();
-    final handle = IC.isar_watch_object(
+    final handle = isar_watch_object(
       isar.ptr,
       ptr,
       id,
@@ -551,7 +544,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
 
     final controller = StreamController<void>(
       onCancel: () {
-        IC.isar_stop_watching(handle);
+        isar_stop_watching(handle);
         port.close();
       },
     );
@@ -598,7 +591,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
       final cObjSetPtr = txn.newCObjectSet(objects.length);
       serializeObjects(txn, cObjSetPtr.ref.objects, objects);
 
-      IC.isar_verify(ptr, txn.ptr, cObjSetPtr);
+      isar_verify(ptr, txn.ptr, cObjSetPtr);
       await txn.wait();
     });
   }
@@ -618,7 +611,7 @@ class IsarCollectionImpl<OBJ> extends IsarCollection<OBJ> {
         idsPtr[i * 2 + 1] = targetIds[i];
       }
 
-      IC.isar_link_verify(
+      isar_link_verify(
         ptr,
         txn.ptr,
         link.id,

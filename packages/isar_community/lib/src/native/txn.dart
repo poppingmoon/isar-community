@@ -15,7 +15,7 @@ class Txn extends Transaction {
 
   /// @nodoc
   Txn.async(Isar isar, this.ptr, bool write, Stream<void> stream)
-      : super(isar, false, write) {
+    : super(isar, false, write) {
     _completers = Queue();
     _portSubscription = stream.listen(
       (_) => _completers.removeFirst().complete(),
@@ -81,7 +81,7 @@ class Txn extends Transaction {
   @override
   Future<void> commit() async {
     active = false;
-    IC.isar_txn_finish(ptr, true);
+    isar_txn_finish(ptr, true);
     await wait();
     unawaited(_portSubscription!.cancel());
   }
@@ -89,13 +89,13 @@ class Txn extends Transaction {
   @override
   void commitSync() {
     active = false;
-    nCall(IC.isar_txn_finish(ptr, true));
+    nCall(isar_txn_finish(ptr, true));
   }
 
   @override
   Future<void> abort() async {
     active = false;
-    IC.isar_txn_finish(ptr, false);
+    isar_txn_finish(ptr, false);
     await wait();
     unawaited(_portSubscription!.cancel());
   }
@@ -103,7 +103,7 @@ class Txn extends Transaction {
   @override
   void abortSync() {
     active = false;
-    nCall(IC.isar_txn_finish(ptr, false));
+    nCall(isar_txn_finish(ptr, false));
   }
 
   @override

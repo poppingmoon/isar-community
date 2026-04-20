@@ -16,7 +16,7 @@ typedef QueryDeserialize<T> = List<T> Function(CObjectSet);
 
 class QueryImpl<T> extends Query<T> implements Finalizable {
   QueryImpl(this.col, this.queryPtr, this.deserialize, this.propertyId) {
-    NativeFinalizer(isarQueryFree).attach(this, queryPtr.cast());
+    Finalizer(isar_q_free).attach(this, queryPtr.cast());
   }
   static const int maxLimit = 4294967295;
 
@@ -46,11 +46,11 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
     return col.isar.getTxn(false, (Txn txn) async {
       final resultsPtr = txn.alloc<CObjectSet>();
       try {
-        IC.isar_q_find(queryPtr, txn.ptr, resultsPtr, limit);
+        isar_q_find(queryPtr, txn.ptr, resultsPtr, limit);
         await txn.wait();
         return deserialize(resultsPtr.ref).cast();
       } finally {
-        IC.isar_free_c_object_set(resultsPtr);
+        isar_free_c_object_set(resultsPtr);
       }
     });
   }
@@ -72,10 +72,10 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
     return col.isar.getTxnSync(false, (Txn txn) {
       final resultsPtr = txn.getCObjectsSet();
       try {
-        nCall(IC.isar_q_find(queryPtr, txn.ptr, resultsPtr, limit));
+        nCall(isar_q_find(queryPtr, txn.ptr, resultsPtr, limit));
         return deserialize(resultsPtr.ref).cast();
       } finally {
-        IC.isar_free_c_object_set(resultsPtr);
+        isar_free_c_object_set(resultsPtr);
       }
     });
   }
@@ -90,7 +90,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
   Future<int> deleteInternal(int limit) {
     return col.isar.getTxn(false, (Txn txn) async {
       final countPtr = txn.alloc<Uint32>();
-      IC.isar_q_delete(queryPtr, col.ptr, txn.ptr, limit, countPtr);
+      isar_q_delete(queryPtr, col.ptr, txn.ptr, limit, countPtr);
       await txn.wait();
       return countPtr.value;
     });
@@ -105,7 +105,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
   int deleteSyncInternal(int limit) {
     return col.isar.getTxnSync(false, (Txn txn) {
       final countPtr = txn.alloc<Uint32>();
-      nCall(IC.isar_q_delete(queryPtr, col.ptr, txn.ptr, limit, countPtr));
+      nCall(isar_q_delete(queryPtr, col.ptr, txn.ptr, limit, countPtr));
       return countPtr.value;
     });
   }
@@ -120,7 +120,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
   @override
   Stream<void> watchLazy({bool fireImmediately = false}) {
     final port = ReceivePort();
-    final handle = IC.isar_watch_query(
+    final handle = isar_watch_query(
       col.isar.ptr,
       col.ptr,
       queryPtr,
@@ -129,7 +129,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
 
     final controller = StreamController<void>(
       onCancel: () {
-        IC.isar_stop_watching(handle);
+        isar_stop_watching(handle);
         port.close();
       },
     );
@@ -150,7 +150,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
       final idNamePtr = col.schema.idName.toCString(txn.alloc);
 
       nCall(
-        IC.isar_q_export_json(
+        isar_q_export_json(
           queryPtr,
           col.ptr,
           txn.ptr,
@@ -165,7 +165,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
         final bytes = bytesPtrPtr.value.asTypedList(lengthPtr.value);
         return callback(bytes);
       } finally {
-        IC.isar_free_json(bytesPtrPtr.value, lengthPtr.value);
+        isar_free_json(bytesPtrPtr.value, lengthPtr.value);
       }
     });
   }
@@ -179,7 +179,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
 
       try {
         nCall(
-          IC.isar_q_export_json(
+          isar_q_export_json(
             queryPtr,
             col.ptr,
             txn.ptr,
@@ -191,7 +191,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
         final bytes = bytesPtrPtr.value.asTypedList(lengthPtr.value);
         return callback(bytes);
       } finally {
-        IC.isar_free_json(bytesPtrPtr.value, lengthPtr.value);
+        isar_free_json(bytesPtrPtr.value, lengthPtr.value);
       }
     });
   }
@@ -201,7 +201,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
     return col.isar.getTxn(false, (Txn txn) async {
       final resultPtrPtr = txn.alloc<Pointer<CAggregationResult>>();
 
-      IC.isar_q_aggregate(
+      isar_q_aggregate(
         col.ptr,
         queryPtr,
         txn.ptr,
@@ -221,7 +221,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
       final resultPtrPtr = txn.alloc<Pointer<CAggregationResult>>();
 
       nCall(
-        IC.isar_q_aggregate(
+        isar_q_aggregate(
           col.ptr,
           queryPtr,
           txn.ptr,
@@ -240,7 +240,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
   ) {
     final nullable = op == AggregationOp.min || op == AggregationOp.max;
     if (R == int || R == DateTime) {
-      final value = IC.isar_q_aggregate_long_result(resultPtr);
+      final value = isar_q_aggregate_long_result(resultPtr);
       if (nullable && value == nullLong) {
         return null;
       }
@@ -251,7 +251,7 @@ class QueryImpl<T> extends Query<T> implements Finalizable {
             as R;
       }
     } else {
-      final value = IC.isar_q_aggregate_double_result(resultPtr);
+      final value = isar_q_aggregate_double_result(resultPtr);
       if (nullable && value.isNaN) {
         return null;
       } else {

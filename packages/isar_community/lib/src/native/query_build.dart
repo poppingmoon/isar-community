@@ -26,7 +26,7 @@ Query<T> buildNativeQuery<T>(
   int? limit,
   String? property,
 ) {
-  final qbPtr = IC.isar_qb_create(col.ptr);
+  final qbPtr = isar_qb_create(col.ptr);
 
   for (final wc in whereClauses) {
     if (wc is IdWhereClause) {
@@ -43,7 +43,7 @@ Query<T> buildNativeQuery<T>(
     try {
       final filterPtr = _buildFilter(col, null, filter, alloc);
       if (filterPtr != null) {
-        IC.isar_qb_set_filter(qbPtr, filterPtr);
+        isar_qb_set_filter(qbPtr, filterPtr);
       }
     } finally {
       alloc.releaseAll();
@@ -53,18 +53,18 @@ Query<T> buildNativeQuery<T>(
   for (final sortProperty in sortBy) {
     final property = col.schema.property(sortProperty.property);
     nCall(
-      IC.isar_qb_add_sort_by(qbPtr, property.id, sortProperty.sort == Sort.asc),
+      isar_qb_add_sort_by(qbPtr, property.id, sortProperty.sort == Sort.asc),
     );
   }
 
   if (offset != null || limit != null) {
-    IC.isar_qb_set_offset_limit(qbPtr, offset ?? -1, limit ?? -1);
+    isar_qb_set_offset_limit(qbPtr, offset ?? -1, limit ?? -1);
   }
 
   for (final distinctByProperty in distinctBy) {
     final property = col.schema.property(distinctByProperty.property);
     nCall(
-      IC.isar_qb_add_distinct_by(
+      isar_qb_add_distinct_by(
         qbPtr,
         property.id,
         distinctByProperty.caseSensitive ?? true,
@@ -77,13 +77,14 @@ Query<T> buildNativeQuery<T>(
   if (property == null) {
     deserialize = (col as IsarCollectionImpl<T>).deserializeObjects;
   } else {
-    propertyId =
-        property != col.schema.idName ? col.schema.property(property).id : null;
-    deserialize =
-        (CObjectSet cObjSet) => col.deserializeProperty(cObjSet, propertyId);
+    propertyId = property != col.schema.idName
+        ? col.schema.property(property).id
+        : null;
+    deserialize = (CObjectSet cObjSet) =>
+        col.deserializeProperty(cObjSet, propertyId);
   }
 
-  final queryPtr = IC.isar_qb_build(qbPtr);
+  final queryPtr = isar_qb_build(qbPtr);
   return QueryImpl(col, queryPtr, deserialize, propertyId);
 }
 
@@ -95,7 +96,7 @@ void _addIdWhereClause(
   final lower = (wc.lower ?? minLong) + (wc.includeLower ? 0 : 1);
   final upper = (wc.upper ?? maxLong) - (wc.includeUpper ? 0 : 1);
   nCall(
-    IC.isar_qb_add_id_where_clause(
+    isar_qb_add_id_where_clause(
       qbPtr,
       sort == Sort.asc ? lower : upper,
       sort == Sort.asc ? upper : lower,
@@ -129,7 +130,7 @@ Pointer<CIndexKey>? _buildLowerIndexBound(
     final lowerPtr = buildIndexKey(schema, index, wc.lower!);
 
     if (!wc.includeLower) {
-      if (!IC.isar_key_increase(lowerPtr)) {
+      if (!isar_key_increase(lowerPtr)) {
         return null;
       }
     }
@@ -164,14 +165,14 @@ Pointer<CIndexKey>? _buildUpperIndexBound(
     final upperPtr = buildIndexKey(schema, index, wc.upper!);
 
     if (!wc.includeUpper) {
-      if (!IC.isar_key_decrease(upperPtr)) {
+      if (!isar_key_decrease(upperPtr)) {
         return null;
       }
     }
 
     // Also include composite indexes for upper keys
     if (index.properties.length > wc.upper!.length) {
-      IC.isar_key_add_long(upperPtr, maxLong);
+      isar_key_add_long(upperPtr, maxLong);
     }
 
     return upperPtr;
@@ -191,7 +192,7 @@ void _addIndexWhereClause(
 
   if (lowerPtr != null && upperPtr != null) {
     nCall(
-      IC.isar_qb_add_index_where_clause(
+      isar_qb_add_index_where_clause(
         qbPtr,
         schema.index(wc.indexName).id,
         lowerPtr,
@@ -203,7 +204,7 @@ void _addIndexWhereClause(
   } else {
     // this where clause does not match any objects
     nCall(
-      IC.isar_qb_add_id_where_clause(
+      isar_qb_add_id_where_clause(
         qbPtr,
         Isar.autoIncrement,
         Isar.autoIncrement,
@@ -221,7 +222,7 @@ void _addLinkWhereClause(
   linkCol as IsarCollectionImpl;
 
   final linkId = linkCol.schema.link(wc.linkName).id;
-  nCall(IC.isar_qb_add_link_where_clause(qbPtr, linkCol.ptr, linkId, wc.id));
+  nCall(isar_qb_add_link_where_clause(qbPtr, linkCol.ptr, linkId, wc.id));
 }
 
 Pointer<CFilter>? _buildFilter(
@@ -260,7 +261,7 @@ Pointer<CFilter>? _buildFilterGroup(
 
   final filterPtrPtr = alloc<Pointer<CFilter>>();
   if (group.type == FilterGroupType.not) {
-    IC.isar_filter_not(filterPtrPtr, builtConditions.first!);
+    isar_filter_not(filterPtrPtr, builtConditions.first!);
   } else if (builtConditions.length == 1) {
     return builtConditions[0];
   } else {
@@ -268,7 +269,7 @@ Pointer<CFilter>? _buildFilterGroup(
     for (var i = 0; i < builtConditions.length; i++) {
       conditionsPtrPtr[i] = builtConditions[i]!;
     }
-    IC.isar_filter_and_or_xor(
+    isar_filter_and_or_xor(
       filterPtrPtr,
       group.type == FilterGroupType.and,
       group.type == FilterGroupType.xor,
@@ -304,10 +305,10 @@ Pointer<CFilter>? _buildLink(
       return null;
     }
 
-    nCall(IC.isar_filter_link(col.ptr, filterPtrPtr, condition, linkId));
+    nCall(isar_filter_link(col.ptr, filterPtrPtr, condition, linkId));
   } else {
     nCall(
-      IC.isar_filter_link_length(
+      isar_filter_link_length(
         col.ptr,
         filterPtrPtr,
         link.lower!,
@@ -340,7 +341,7 @@ Pointer<CFilter>? _buildObject(
 
   final filterPtrPtr = alloc<Pointer<CFilter>>();
   nCall(
-    IC.isar_filter_object(
+    isar_filter_object(
       col.ptr,
       filterPtrPtr,
       condition,
@@ -546,11 +547,9 @@ void _buildConditionIsNull({
   required int? propertyId,
 }) {
   if (propertyId != null) {
-    nCall(
-      IC.isar_filter_null(colPtr, filterPtr, embeddedColId ?? 0, propertyId),
-    );
+    nCall(isar_filter_null(colPtr, filterPtr, embeddedColId ?? 0, propertyId));
   } else {
-    IC.isar_filter_static(filterPtr, false);
+    isar_filter_static(filterPtr, false);
   }
 }
 
@@ -564,11 +563,11 @@ void _buildConditionIsNotNull({
   if (propertyId != null) {
     final conditionPtr = alloc<Pointer<CFilter>>();
     nCall(
-      IC.isar_filter_null(colPtr, conditionPtr, embeddedColId ?? 0, propertyId),
+      isar_filter_null(colPtr, conditionPtr, embeddedColId ?? 0, propertyId),
     );
-    IC.isar_filter_not(filterPtr, conditionPtr.value);
+    isar_filter_not(filterPtr, conditionPtr.value);
   } else {
-    IC.isar_filter_static(filterPtr, true);
+    isar_filter_static(filterPtr, true);
   }
 }
 
@@ -581,7 +580,7 @@ void _buildConditionElementIsNull({
   required Object nullValue,
 }) {
   if (isObjectList) {
-    IC.isar_filter_object(
+    isar_filter_object(
       colPtr,
       filterPtr,
       nullptr,
@@ -612,8 +611,8 @@ void _buildConditionElementIsNotNull({
 }) {
   if (isObjectList) {
     final objFilterPtrPtr = alloc<Pointer<CFilter>>();
-    IC.isar_filter_static(objFilterPtrPtr, true);
-    IC.isar_filter_object(
+    isar_filter_static(objFilterPtrPtr, true);
+    isar_filter_object(
       colPtr,
       filterPtr,
       objFilterPtrPtr.value,
@@ -645,10 +644,10 @@ void _buildConditionEqual({
 }) {
   if (val is int) {
     if (propertyId == null) {
-      IC.isar_filter_id(filterPtr, val, true, val, true);
+      isar_filter_id(filterPtr, val, true, val, true);
     } else {
       nCall(
-        IC.isar_filter_long(
+        isar_filter_long(
           colPtr,
           filterPtr,
           val,
@@ -674,10 +673,10 @@ void _buildConditionEqual({
       epsilon: epsilon,
     );
     if (lower == null || upper == null) {
-      IC.isar_filter_static(filterPtr, false);
+      isar_filter_static(filterPtr, false);
     } else {
       nCall(
-        IC.isar_filter_double(
+        isar_filter_double(
           colPtr,
           filterPtr,
           lower,
@@ -689,7 +688,7 @@ void _buildConditionEqual({
     }
   } else if (val is Pointer<Char>) {
     nCall(
-      IC.isar_filter_string(
+      isar_filter_string(
         colPtr,
         filterPtr,
         val,
@@ -720,10 +719,10 @@ void _buildConditionBetween({
 }) {
   if (lower is int && upper is int) {
     if (propertyId == null) {
-      IC.isar_filter_id(filterPtr, lower, includeLower, upper, includeUpper);
+      isar_filter_id(filterPtr, lower, includeLower, upper, includeUpper);
     } else {
       nCall(
-        IC.isar_filter_long(
+        isar_filter_long(
           colPtr,
           filterPtr,
           lower,
@@ -749,10 +748,10 @@ void _buildConditionBetween({
       epsilon: epsilon,
     );
     if (adjustedLower == null || adjustedUpper == null) {
-      IC.isar_filter_static(filterPtr, false);
+      isar_filter_static(filterPtr, false);
     } else {
       nCall(
-        IC.isar_filter_double(
+        isar_filter_double(
           colPtr,
           filterPtr,
           adjustedLower,
@@ -764,7 +763,7 @@ void _buildConditionBetween({
     }
   } else if (lower is Pointer<Char> && upper is Pointer<Char>) {
     nCall(
-      IC.isar_filter_string(
+      isar_filter_string(
         colPtr,
         filterPtr,
         lower,
@@ -793,10 +792,10 @@ void _buildConditionLessThan({
 }) {
   if (val is int) {
     if (propertyId == null) {
-      IC.isar_filter_id(filterPtr, minLong, true, val, include);
+      isar_filter_id(filterPtr, minLong, true, val, include);
     } else {
       nCall(
-        IC.isar_filter_long(
+        isar_filter_long(
           colPtr,
           filterPtr,
           minLong,
@@ -816,10 +815,10 @@ void _buildConditionLessThan({
       epsilon: epsilon,
     );
     if (upper == null) {
-      IC.isar_filter_static(filterPtr, false);
+      isar_filter_static(filterPtr, false);
     } else {
       nCall(
-        IC.isar_filter_double(
+        isar_filter_double(
           colPtr,
           filterPtr,
           minDouble,
@@ -831,7 +830,7 @@ void _buildConditionLessThan({
     }
   } else if (val is Pointer<Char>) {
     nCall(
-      IC.isar_filter_string(
+      isar_filter_string(
         colPtr,
         filterPtr,
         nullptr,
@@ -860,10 +859,10 @@ void _buildConditionGreaterThan({
 }) {
   if (val is int) {
     if (propertyId == null) {
-      IC.isar_filter_id(filterPtr, val, include, maxLong, true);
+      isar_filter_id(filterPtr, val, include, maxLong, true);
     } else {
       nCall(
-        IC.isar_filter_long(
+        isar_filter_long(
           colPtr,
           filterPtr,
           val,
@@ -883,10 +882,10 @@ void _buildConditionGreaterThan({
       epsilon: epsilon,
     );
     if (lower == null) {
-      IC.isar_filter_static(filterPtr, false);
+      isar_filter_static(filterPtr, false);
     } else {
       nCall(
-        IC.isar_filter_double(
+        isar_filter_double(
           colPtr,
           filterPtr,
           lower,
@@ -898,7 +897,7 @@ void _buildConditionGreaterThan({
     }
   } else if (val is Pointer<Char>) {
     nCall(
-      IC.isar_filter_string(
+      isar_filter_string(
         colPtr,
         filterPtr,
         val,
@@ -934,7 +933,7 @@ void _buildConditionStringOp({
     switch (conditionType) {
       case FilterConditionType.startsWith:
         nCall(
-          IC.isar_filter_string_starts_with(
+          isar_filter_string_starts_with(
             colPtr,
             filterPtr,
             val,
@@ -946,7 +945,7 @@ void _buildConditionStringOp({
         break;
       case FilterConditionType.endsWith:
         nCall(
-          IC.isar_filter_string_ends_with(
+          isar_filter_string_ends_with(
             colPtr,
             filterPtr,
             val,
@@ -958,7 +957,7 @@ void _buildConditionStringOp({
         break;
       case FilterConditionType.contains:
         nCall(
-          IC.isar_filter_string_contains(
+          isar_filter_string_contains(
             colPtr,
             filterPtr,
             val,
@@ -970,7 +969,7 @@ void _buildConditionStringOp({
         break;
       case FilterConditionType.matches:
         nCall(
-          IC.isar_filter_string_matches(
+          isar_filter_string_matches(
             colPtr,
             filterPtr,
             val,
@@ -980,6 +979,15 @@ void _buildConditionStringOp({
           ),
         );
         break;
+      case FilterConditionType.equalTo:
+      case FilterConditionType.greaterThan:
+      case FilterConditionType.lessThan:
+      case FilterConditionType.between:
+      case FilterConditionType.isNull:
+      case FilterConditionType.isNotNull:
+      case FilterConditionType.elementIsNull:
+      case FilterConditionType.elementIsNotNull:
+      case FilterConditionType.listLength:
     }
   } else {
     throw IsarError('Unsupported type for condition');
@@ -996,7 +1004,7 @@ void _buildListLength({
 }) {
   if (lower is int && upper is int) {
     nCall(
-      IC.isar_filter_list_length(
+      isar_filter_list_length(
         colPtr,
         filterPtr,
         lower,

@@ -13,12 +13,12 @@ import 'package:isar_community/src/native/txn.dart';
 
 class IsarImpl extends IsarCommon implements Finalizable {
   IsarImpl(super.name, this.ptr) {
-    _finalizer = NativeFinalizer(isarClose);
+    _finalizer = Finalizer(isar_instance_close);
     _finalizer.attach(this, ptr.cast(), detach: this);
   }
 
   final Pointer<CIsarInstance> ptr;
-  late final NativeFinalizer _finalizer;
+  late final Finalizer<Pointer<CIsarInstance>> _finalizer;
 
   final offsets = <Type, List<int>>{};
 
@@ -31,11 +31,11 @@ class IsarImpl extends IsarCommon implements Finalizable {
     requireOpen();
 
     if (_directory == null) {
-      final dirPtr = IC.isar_instance_get_path(ptr);
+      final dirPtr = isar_instance_get_path(ptr);
       try {
         _directory = dirPtr.cast<Utf8>().toDartString();
       } finally {
-        IC.isar_free_string(dirPtr);
+        isar_free_string(dirPtr);
       }
     }
 
@@ -48,7 +48,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
     final portStream = wrapIsarPort(port);
 
     final txnPtrPtr = malloc<Pointer<CIsarTxn>>();
-    IC.isar_txn_begin(
+    isar_txn_begin(
       ptr,
       txnPtrPtr,
       false,
@@ -64,7 +64,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
 
   @override
   Transaction beginTxnSync(bool write, bool silent) {
-    nCall(IC.isar_txn_begin(ptr, _syncTxnPtrPtr, true, write, silent, 0));
+    nCall(isar_txn_begin(ptr, _syncTxnPtrPtr, true, write, silent, 0));
     return Txn.sync(this, _syncTxnPtrPtr.value, write);
   }
 
@@ -72,9 +72,9 @@ class IsarImpl extends IsarCommon implements Finalizable {
   bool performClose(bool deleteFromDisk) {
     _finalizer.detach(this);
     if (deleteFromDisk) {
-      return IC.isar_instance_close_and_delete(ptr);
+      return isar_instance_close_and_delete(ptr);
     } else {
-      return IC.isar_instance_close(ptr);
+      return isar_instance_close(ptr);
     }
   }
 
@@ -85,7 +85,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
   }) {
     return getTxn(false, (Txn txn) async {
       final sizePtr = txn.alloc<Int64>();
-      IC.isar_instance_get_size(
+      isar_instance_get_size(
         ptr,
         txn.ptr,
         includeIndexes,
@@ -102,7 +102,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
     return getTxnSync(false, (Txn txn) {
       final sizePtr = txn.alloc<Int64>();
       nCall(
-        IC.isar_instance_get_size(
+        isar_instance_get_size(
           ptr,
           txn.ptr,
           includeIndexes,
@@ -122,7 +122,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
 
     try {
       final stream = wrapIsarPort(receivePort);
-      IC.isar_instance_copy_to_file(ptr, pathPtr, nativePort);
+      isar_instance_copy_to_file(ptr, pathPtr, nativePort);
       await stream.first;
     } finally {
       malloc.free(pathPtr);
@@ -132,7 +132,7 @@ class IsarImpl extends IsarCommon implements Finalizable {
   @override
   Future<void> verify() async {
     return getTxn(false, (Txn txn) async {
-      IC.isar_instance_verify(ptr, txn.ptr);
+      isar_instance_verify(ptr, txn.ptr);
       await txn.wait();
     });
   }
