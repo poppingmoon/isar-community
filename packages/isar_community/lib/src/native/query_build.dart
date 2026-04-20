@@ -77,10 +77,11 @@ Query<T> buildNativeQuery<T>(
   if (property == null) {
     deserialize = (col as IsarCollectionImpl<T>).deserializeObjects;
   } else {
-    propertyId =
-        property != col.schema.idName ? col.schema.property(property).id : null;
-    deserialize =
-        (CObjectSet cObjSet) => col.deserializeProperty(cObjSet, propertyId);
+    propertyId = property != col.schema.idName
+        ? col.schema.property(property).id
+        : null;
+    deserialize = (CObjectSet cObjSet) =>
+        col.deserializeProperty(cObjSet, propertyId);
   }
 
   final queryPtr = IC.isar_qb_build(qbPtr);
@@ -980,6 +981,15 @@ void _buildConditionStringOp({
           ),
         );
         break;
+      case FilterConditionType.equalTo:
+      case FilterConditionType.greaterThan:
+      case FilterConditionType.lessThan:
+      case FilterConditionType.between:
+      case FilterConditionType.isNull:
+      case FilterConditionType.isNotNull:
+      case FilterConditionType.elementIsNull:
+      case FilterConditionType.elementIsNotNull:
+      case FilterConditionType.listLength:
     }
   } else {
     throw IsarError('Unsupported type for condition');

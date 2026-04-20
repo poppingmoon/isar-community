@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:ffi';
-import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
@@ -37,8 +36,6 @@ const nullBool = IsarObject_NULL_BOOL;
 const falseBool = IsarObject_FALSE_BOOL;
 const trueBool = IsarObject_TRUE_BOOL;
 
-const String binariesUrl = 'https://binaries.isar-community.dev';
-
 bool _isarInitialized = false;
 
 // ignore: non_constant_identifier_names
@@ -56,41 +53,19 @@ FutureOr<void> initializeCoreBinary({
     return null;
   }
 
-  String? libraryPath;
-  if (!Platform.isIOS) {
-    libraryPath = libraries[Abi.current()] ?? Abi.current().localName;
-  }
-
   try {
-    _initializePath(libraryPath);
+    _initializePath();
   } catch (e) {
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      final downloadPath = _getLibraryDownloadPath(libraries);
-      if (download) {
-        return _downloadIsarCore(downloadPath).then((value) {
-          _initializePath(downloadPath);
-        });
-      } else {
-        // try to use the binary at the download path anyway
-        _initializePath(downloadPath);
-      }
-    } else {
-      throw IsarError(
-        'Could not initialize IsarCore library for processor architecture '
-        '"${Abi.current()}". If you create a Flutter app, make sure to add '
-        'isar_community_flutter_libs to your dependencies.\n$e',
-      );
-    }
+    throw IsarError(
+      'Could not initialize IsarCore library for processor architecture '
+      '"${Abi.current()}". If you create a Flutter app, make sure to add '
+      'isar_community_flutter_libs to your dependencies.\n$e',
+    );
   }
 }
 
-void _initializePath(String? libraryPath) {
-  late DynamicLibrary dylib;
-  if (Platform.isIOS) {
-    dylib = DynamicLibrary.process();
-  } else {
-    dylib = DynamicLibrary.open(libraryPath!);
-  }
+void _initializePath() {
+  final dylib = DynamicLibrary.process();
 
   final bindings = IsarCoreBindings(dylib);
 
@@ -118,44 +93,6 @@ void _initializePath(String? libraryPath) {
   isarClose = dylib.lookup('isar_instance_close');
   isarQueryFree = dylib.lookup('isar_q_free');
   _isarInitialized = true;
-}
-
-String _getLibraryDownloadPath(Map<Abi, String> libraries) {
-  final providedPath = libraries[Abi.current()];
-  if (providedPath != null) {
-    return providedPath;
-  } else {
-    final name = Abi.current().localName;
-    if (Platform.script.path.isEmpty) {
-      return name;
-    }
-    var dir = Platform.script.pathSegments
-        .sublist(0, Platform.script.pathSegments.length - 1)
-        .join(Platform.pathSeparator);
-    if (!Platform.isWindows) {
-      // Not on windows, add leading platform path separator
-      dir = '${Platform.pathSeparator}$dir';
-    }
-    return '$dir${Platform.pathSeparator}$name';
-  }
-}
-
-Future<void> _downloadIsarCore(String libraryPath) async {
-  final libraryFile = File(libraryPath);
-  // ignore: avoid_slow_async_io
-  if (await libraryFile.exists()) {
-    return;
-  }
-  final remoteName = Abi.current().remoteName;
-  final uri = Uri.parse('$binariesUrl/${Isar.version}/$remoteName');
-  final request = await HttpClient().getUrl(uri);
-  final response = await request.close();
-  if (response.statusCode != 200) {
-    throw IsarError(
-      'Could not download IsarCore library: ${response.reasonPhrase}',
-    );
-  }
-  await response.pipe(libraryFile.openWrite());
 }
 
 IsarError? isarErrorFromResult(int result) {
@@ -201,44 +138,4 @@ Stream<void> wrapIsarPort(ReceivePort port) {
 extension PointerX on Pointer {
   @pragma('vm:prefer-inline')
   bool get isNull => address == 0;
-}
-
-extension on Abi {
-  String get localName {
-    switch (Abi.current()) {
-      case Abi.androidArm:
-      case Abi.androidArm64:
-      case Abi.androidIA32:
-      case Abi.androidX64:
-        return 'libisar.so';
-      case Abi.macosArm64:
-      case Abi.macosX64:
-        return 'libisar.dylib';
-      case Abi.linuxX64:
-        return 'libisar.so';
-      case Abi.windowsArm64:
-      case Abi.windowsX64:
-        return 'libisar.dll';
-      default:
-        throw IsarError(
-          'Unsupported processor architecture "${Abi.current()}". '
-          'Please open an issue on GitHub to request it.',
-        );
-    }
-  }
-
-  String get remoteName {
-    switch (Abi.current()) {
-      case Abi.macosArm64:
-      case Abi.macosX64:
-        return 'libisar_macos.dylib';
-      case Abi.linuxX64:
-        return 'libisar_linux_x64.so';
-      case Abi.windowsArm64:
-        return 'isar_windows_arm64.dll';
-      case Abi.windowsX64:
-        return 'isar_windows_x64.dll';
-    }
-    throw UnimplementedError();
-  }
 }
