@@ -15,3 +15,8 @@ updates:
           - "*"
     allow:
       - dependency-name: isar_community*
+
+  - package-ecosystem: rust-toolchain
+    directory: /packages/isar_core_ffi
+    schedule:
+      interval: daily
