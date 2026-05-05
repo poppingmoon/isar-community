@@ -74,7 +74,7 @@ jobs:
       NDK_VERSION: 28.2.13676358
       IOS_TARGET_VERSION: 13
       IPHONEOS_DEPLOYMENT_TARGET: 13.0
-      MACOS_TARGET_VERSION: 13
+      MACOS_TARGET_VERSION: 11
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
