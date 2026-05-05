@@ -8,25 +8,25 @@
 /// Used to verify the integrity of downloaded assets.
 const assetHashes = <String, String>{
   'isar_aarch64-pc-windows-msvc.dll':
-      'f56883a3da80feceb73735b505ff23282bb4133fd5eccb303423e911b71d414f',
+      'eb8bd9903227653879401fff74d313ad6bed27bf462a2969ba4ef7f38472212f',
   'isar_x86_64-pc-windows-msvc.dll':
-      '0f835a0594abdffef2cbd52f55c896bf97b8ff7b8b44aef7477cccd88840e6cd',
+      '3f93af45529b45d507288063d76ad2f612e50d2beec72a9c41fad2b3454cfabb',
   'libisar_aarch64-apple-darwin.dylib':
-      'ed2210d722660768ea13652ff56116ae80a909edc15122d07618bd9edddedcb4',
+      'e46c961dd51f17f57fe06a1f76246c21b9f7468f56b902052c7d26af310bae30',
   'libisar_aarch64-apple-ios-sim.dylib':
-      'e440a00287e0022017712ab2610f0462c3e8645d43288c50e57aeaae85fd37f5',
+      '7e1b1c405217c5a5940a204550d0fa49170388e6ce15bb8134f9a159450dbd11',
   'libisar_aarch64-apple-ios.dylib':
-      '6e1d6e4a30e8e1df307e53ad1d8e84bbbde9748f94cd73d8d3dba3874555fa78',
+      'c7ce9005de56a3b6726562054b4910f33d83e228af4fe186537b60ae43c772f5',
   'libisar_aarch64-linux-android.so':
       'e0a664644498aec4f4328d8c702738fbfbc6ab4de2646c355a5392c99d53a5c4',
   'libisar_aarch64-unknown-linux-gnu.so':
-      '00274e5051532709b44c327bc34f244fe8b1fa223ae6bd45a178d0fcf29cf1e8',
+      '35c1cd174b00daa5771a22ce582946536a0659ca1df7330746585015fb1d96e8',
   'libisar_armv7-linux-androideabi.so':
       '274e34e61dad346ccbf5f068fe2900023ef5d108ad325d593cb6317d71a5ee0c',
   'libisar_x86_64-apple-darwin.dylib':
-      'bb6d879fbaa4e0fe1c1470bcf3c1890a6a21918860813139fa7cb93f92312ef6',
+      'c1abb5cae247bed21a9308c11680ff816fb0360e3f242d92ceb07a1392046fd6',
   'libisar_x86_64-apple-ios.dylib':
-      '618f230bfaafd26924025a88d56e4c15df9c471f3cdd4bc21bfd2f8ac640924f',
+      '5c0fb117513eaf8b34345c21eee32033c9f5afd6b68a2146c4b16c6a2c168650',
   'libisar_x86_64-linux-android.so':
       'b51c2147166630f7a4b35e4ce0c8005921ad0b2badb93ce7940d58e66e22bd3e',
   'libisar_x86_64-unknown-linux-gnu.so':
