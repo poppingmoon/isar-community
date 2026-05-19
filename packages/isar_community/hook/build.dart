@@ -21,9 +21,11 @@ void main(List<String> args) async {
         path.fromUri(input.outputDirectory),
         'target',
       );
+      final httpsProxy = input.userDefines['https_proxy'] as String?;
       final file = await downloadAsset(
         targetOS.libraryFileName('isar_$targetTriple', linkMode),
         Directory(outputDir),
+        httpsProxy: httpsProxy,
       );
       final fileHash = hashAsset(file);
       final expectedHash = assetHashes[path.basename(file.path)];

@@ -10,11 +10,20 @@ Uri downloadUri(String target) => Uri.https(
 );
 
 /// Downloads an asset with the specified [name].
-Future<File> downloadAsset(String name, Directory outputDirectory) async {
+Future<File> downloadAsset(
+  String name,
+  Directory outputDirectory, {
+  String? httpsProxy,
+}) async {
   final uri = downloadUri(name);
   final client = HttpClient()
     // Respect the http(s)_proxy environment variables.
-    ..findProxy = HttpClient.findProxyFromEnvironment;
+    ..findProxy = httpsProxy != null
+        ? (url) => HttpClient.findProxyFromEnvironment(
+            url,
+            environment: {'https_proxy': httpsProxy},
+          )
+        : HttpClient.findProxyFromEnvironment;
   final request = await client.getUrl(uri);
   final response = await request.close();
   if (response.statusCode != 200) {
