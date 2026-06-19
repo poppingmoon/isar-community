@@ -17,7 +17,7 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2022]
         sdk: [3.0.0]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -65,7 +65,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Prepare Build
         uses: ./.github/actions/prepare-build
       - name: Display Rust version
@@ -98,7 +98,7 @@ jobs:
     needs: build_binaries
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
@@ -183,7 +183,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Delete release on failure
         run: |
           echo "One or more jobs failed. Deleting release ${{ github.ref_name }}"
