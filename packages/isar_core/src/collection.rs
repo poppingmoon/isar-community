@@ -24,7 +24,7 @@ pub struct IsarCollection {
     pub id: u64,
 
     pub properties: Vec<Property>,
-    pub embedded_properties: IntMap<Vec<Property>>,
+    pub embedded_properties: IntMap<u64, Vec<Property>>,
 
     pub(crate) instance_id: u64,
     pub(crate) db: Db,
@@ -46,7 +46,7 @@ impl IsarCollection {
         instance_id: u64,
         name: &str,
         properties: Vec<Property>,
-        embedded_properties: IntMap<Vec<Property>>,
+        embedded_properties: IntMap<u64, Vec<Property>>,
         indexes: Vec<IsarIndex>,
         links: Vec<IsarLink>,
         backlinks: Vec<IsarLink>,
@@ -395,7 +395,7 @@ impl IsarCollection {
         Ok(())
     }
 
-    pub fn verify(&self, txn: &mut IsarTxn, objects: &IntMap<IsarObject>) -> Result<()> {
+    pub fn verify(&self, txn: &mut IsarTxn, objects: &IntMap<u64, IsarObject>) -> Result<()> {
         txn.read(self.instance_id, |cursors| {
             let mut counter = 0;
             let mut cursor = cursors.get_cursor(self.db)?;

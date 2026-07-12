@@ -1,7 +1,8 @@
 // ignore_for_file: public_member_api_docs, deprecated_member_use
 
+import 'dart:js_util';
+
 import 'package:isar_community/isar.dart';
-import 'package:js/js_util.dart';
 import 'package:meta/dart2js.dart';
 
 const nullNumber = double.negativeInfinity;

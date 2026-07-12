@@ -2,10 +2,10 @@
 
 import 'dart:indexed_db';
 import 'dart:js';
+import 'dart:js_interop';
+import 'dart:js_util';
 
 import 'package:isar_community/isar.dart';
-import 'package:js/js.dart';
-import 'package:js/js_util.dart';
 
 @JS('JSON.stringify')
 external String stringify(dynamic value);

@@ -14,7 +14,7 @@ impl<'a> JsonEncodeDecode {
     #[inline(never)]
     pub fn encode(
         properties: &[Property],
-        embedded_properties: &IntMap<Vec<Property>>,
+        embedded_properties: &IntMap<u64, Vec<Property>>,
         object: IsarObject,
         primitive_null: bool,
     ) -> Map<String, Value> {
@@ -110,7 +110,7 @@ impl<'a> JsonEncodeDecode {
 
     fn object_to_value(
         properties: &[Property],
-        embedded_properties: &IntMap<Vec<Property>>,
+        embedded_properties: &IntMap<u64, Vec<Property>>,
         object: Option<IsarObject>,
         primitive_null: bool,
     ) -> Value {
@@ -126,7 +126,7 @@ impl<'a> JsonEncodeDecode {
     #[inline(never)]
     pub fn decode(
         properties: &[Property],
-        embedded_properties: &IntMap<Vec<Property>>,
+        embedded_properties: &IntMap<u64, Vec<Property>>,
         ob: &mut ObjectBuilder,
         json: &Value,
     ) -> Result<()> {
@@ -298,7 +298,7 @@ impl<'a> JsonEncodeDecode {
 
     fn value_to_object(
         value: &Value,
-        embedded_properties: &IntMap<Vec<Property>>,
+        embedded_properties: &IntMap<u64, Vec<Property>>,
         target_id: u64,
     ) -> Result<Option<ObjectBuilder>> {
         if value.is_null() {

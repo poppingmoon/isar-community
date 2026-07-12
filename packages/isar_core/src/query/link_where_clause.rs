@@ -18,7 +18,7 @@ impl LinkWhereClause {
     pub fn iter<'txn, 'env, F>(
         &self,
         cursors: &IsarCursors<'txn, 'env>,
-        mut result_ids: Option<&mut IntMap<()>>,
+        mut result_ids: Option<&mut IntMap<u64, ()>>,
         mut callback: F,
     ) -> Result<bool>
     where

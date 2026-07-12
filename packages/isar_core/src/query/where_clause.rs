@@ -25,7 +25,7 @@ impl WhereClause {
     pub fn iter<'txn, 'env, 'a, F>(
         &self,
         cursors: &IsarCursors<'txn, 'env>,
-        result_ids: Option<&mut IntMap<()>>,
+        result_ids: Option<&mut IntMap<u64, ()>>,
         callback: F,
     ) -> Result<bool>
     where

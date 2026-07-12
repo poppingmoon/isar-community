@@ -186,10 +186,14 @@ impl SchemaManager {
             }
         }
 
-        Ok(added_indexes.keys().copied().collect())
+        Ok(added_indexes.keys().collect())
     }
 
-    pub fn migrate_schema(&mut self, txn: &Txn, schemas: &mut Schema) -> Result<IntMap<Vec<u64>>> {
+    pub fn migrate_schema(
+        &mut self,
+        txn: &Txn,
+        schemas: &mut Schema,
+    ) -> Result<IntMap<u64, Vec<u64>>> {
         let cursors = IsarCursors::new(txn, vec![]);
 
         let mut added_indexes = IntMap::new();
@@ -259,7 +263,7 @@ impl SchemaManager {
     fn get_embedded_properties(
         schemas: &Schema,
         properties: &[Property],
-        embedded_properties: &mut IntMap<Vec<Property>>,
+        embedded_properties: &mut IntMap<u64, Vec<Property>>,
     ) {
         for property in properties {
             if let Some(target_id) = property.target_id {

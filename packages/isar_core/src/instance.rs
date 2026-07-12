@@ -19,7 +19,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 use xxhash_rust::xxh3::xxh3_64;
 
-static INSTANCES: Lazy<RwLock<IntMap<Arc<IsarInstance>>>> =
+static INSTANCES: Lazy<RwLock<IntMap<u64, Arc<IsarInstance>>>> =
     Lazy::new(|| RwLock::new(IntMap::new()));
 
 static WATCHER_ID: AtomicU64 = AtomicU64::new(0);

@@ -172,12 +172,11 @@ impl IsarIndex {
         cursors.clear_db(self.db)
     }
 
-    pub fn verify(&self, cursors: &IsarCursors, objects: &IntMap<IsarObject>) -> Result<()> {
+    pub fn verify(&self, cursors: &IsarCursors, objects: &IntMap<u64, IsarObject>) -> Result<()> {
         let mut count = 0;
 
         let mut cursor = cursors.get_cursor(self.db)?;
         for id in objects.keys() {
-            let id = *id;
             let object = *objects.get(id).unwrap();
             let key_builder = IndexKeyBuilder::new(&self.properties);
             key_builder.create_keys(object, |key| {

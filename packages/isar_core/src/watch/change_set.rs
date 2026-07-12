@@ -6,7 +6,7 @@ use std::sync::{Arc, MutexGuard};
 
 pub(crate) struct ChangeSet<'a> {
     watchers: MutexGuard<'a, IsarWatchers>,
-    changed_watchers: IntMap<Arc<Watcher>>,
+    changed_watchers: IntMap<u64, Arc<Watcher>>,
 }
 
 impl<'a> ChangeSet<'a> {
@@ -17,7 +17,10 @@ impl<'a> ChangeSet<'a> {
         }
     }
 
-    fn register_watchers(changed_watchers: &mut IntMap<Arc<Watcher>>, watchers: &[Arc<Watcher>]) {
+    fn register_watchers(
+        changed_watchers: &mut IntMap<u64, Arc<Watcher>>,
+        watchers: &[Arc<Watcher>],
+    ) {
         for w in watchers {
             let registered = changed_watchers.contains_key(w.get_id());
             if !registered {

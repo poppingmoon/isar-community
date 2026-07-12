@@ -9,7 +9,7 @@ pub(crate) type WatcherModifier = Box<dyn FnOnce(&mut IsarWatchers) + Send + 'st
 
 pub(crate) struct IsarWatchers {
     modifiers: Receiver<WatcherModifier>,
-    collection_watchers: IntMap<IsarCollectionWatchers>,
+    collection_watchers: IntMap<u64, IsarCollectionWatchers>,
 }
 
 impl IsarWatchers {
@@ -38,7 +38,7 @@ impl IsarWatchers {
 
 pub struct IsarCollectionWatchers {
     pub(super) watchers: Vec<Arc<Watcher>>,
-    pub(super) object_watchers: IntMap<Vec<Arc<Watcher>>>,
+    pub(super) object_watchers: IntMap<u64, Vec<Arc<Watcher>>>,
     pub(super) query_watchers: Vec<(Query, Arc<Watcher>)>,
 }
 

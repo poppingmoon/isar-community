@@ -9,7 +9,7 @@ use std::ops::{Deref, DerefMut};
 pub(crate) struct IsarCursors<'txn, 'env> {
     txn: &'txn Txn<'env>,
     unbound_cursors: RefCell<Vec<UnboundCursor>>,
-    cursors: RefCell<IntMap<Cursor<'txn>>>,
+    cursors: RefCell<IntMap<u64, Cursor<'txn>>>,
 }
 
 impl<'txn, 'env> IsarCursors<'txn, 'env> {
