@@ -6,4 +6,4 @@ import 'package:isar_community/src/hook_helpers/hashes.dart';
 /// Assets are downloaded from [downloadUri].
 ///
 /// After changing [assetHashes] must be updated.
-const version = 'v3.3.2-2026.07.01';
+const version = 'v3.3.2-2026.07.12';
