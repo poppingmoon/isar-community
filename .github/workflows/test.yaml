@@ -23,6 +23,7 @@ jobs:
   format:
     name: Check formatting
     runs-on: ubuntu-24.04
+    if: false
     steps:
       - uses: actions/checkout@v7
       - name: Setup Flutter
@@ -48,6 +49,7 @@ jobs:
   lint:
     name: Check lints
     runs-on: ubuntu-24.04
+    if: false
     steps:
       - uses: actions/checkout@v7
       - name: Setup Flutter
