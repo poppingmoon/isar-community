@@ -1,7 +1,7 @@
 name: Dart CI
 
 env:
-  FLUTTER_OVERRIDE: "3.35.1"
+  FLUTTER_OVERRIDE: "3.44.6"
 
 on:
   push:
