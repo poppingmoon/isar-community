@@ -36,7 +36,7 @@ const nullBool = IsarObject_NULL_BOOL;
 const falseBool = IsarObject_FALSE_BOOL;
 const trueBool = IsarObject_TRUE_BOOL;
 
-bool _isarInitialized = false;
+bool _isarInitialized = true;
 
 typedef FinalizerFunction = void Function(Pointer<Void> token);
 
