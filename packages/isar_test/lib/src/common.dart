@@ -18,7 +18,7 @@ const kIsWeb = identical(0, 0.0);
 final testErrors = <String>[];
 int testCount = 0;
 
-var _setUp = true;
+var _setUp = false;
 Future<void> _prepareTest() async {
   if (!_setUp) {
     await init();
