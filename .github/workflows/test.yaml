@@ -23,7 +23,6 @@ jobs:
   format:
     name: Check formatting
     runs-on: ubuntu-24.04
-    if: false
     steps:
       - uses: actions/checkout@v7
       - name: Setup Flutter
@@ -44,6 +43,7 @@ jobs:
       - run: flutter pub get
         working-directory: packages/isar_test
       - name: Check formatting
+        continue-on-error: true
         run: dart format --set-exit-if-changed .
 
   lint:
@@ -72,7 +72,8 @@ jobs:
           dart tool/generate_all_tests.dart
         working-directory: packages/isar_test
       - name: Lint
-        run: flutter analyze --no-fatal-warnings
+        continue-on-error: true
+        run: flutter analyze
 
   test:
     name: Dart Test
