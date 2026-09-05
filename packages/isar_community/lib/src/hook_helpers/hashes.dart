@@ -8,27 +8,27 @@
 /// Used to verify the integrity of downloaded assets.
 const assetHashes = <String, String>{
   'isar_aarch64-pc-windows-msvc.dll':
-      'e6d574ba00391d728b35d71a71f9512064bab00b7c82a8210cb7f59ad7026edd',
+      'f9517515bc4a41e950d14ca2a47c1dcd24464a45caf7adf08f7e4607a1c0acdf',
   'isar_x86_64-pc-windows-msvc.dll':
-      '3773e379bca029b7c6a10f71b7d6ee6f20b54a41552f8fa9a1f237f25a4e93e9',
+      '488713a5ecfd92fec715cd13e05cef6b6a16a72ed9d46d62da9368a7aa11bdae',
   'libisar_aarch64-apple-darwin.dylib':
-      'fd2e41fc37e63f63a781195d8b1f7e9b8acf35466f17ea7cd85f75fe333071b8',
+      '7060ef457c08f42aa569242b702876200e6f0c0235406f671e9f45f5e9655ce5',
   'libisar_aarch64-apple-ios-sim.dylib':
-      'f41ec3772cc7a2da80e5bf5dee871444d842209c27b0b26895d1fe718f6bd258',
+      '121fae9e24be6fdfee0f9d1d67383485b0d5be6c206234927a15ec350fa977e4',
   'libisar_aarch64-apple-ios.dylib':
-      'c41bb11926446222da873615aa56da0d29f9aa20c88f6ad16a7b5d9683913d72',
+      'f7fa6744dd0a2fa828a2cfe3b2a037c371a28bfd07a88548f52f1bfdeaa1d373',
   'libisar_aarch64-linux-android.so':
-      '7b4310a2279b4a961fd82d3a57dd9224a747893704a358f28e110140624ba881',
+      '880bf2b5c172033dab6d7552aa9da0c90cfcbd7f46cf0083d89061d324bdbbe8',
   'libisar_aarch64-unknown-linux-gnu.so':
-      '7067cd110c18aad5b917f1680686ed517f3bf1c0d7a7485c7a1cceb644382c2c',
+      '69e03902ce56b7d3b8d217ec521439929205bfbbfac72e87fb1d247f123d8d9e',
   'libisar_armv7-linux-androideabi.so':
-      '9f3ebb2359715d8c5ee23f6a18cd3cc0b37b54eb63d739ed8ff4aee479dea44b',
+      '62b09085bf6f26773c5c7087b0cb1694b4a205ca67aa6d9b64047eddb36b66de',
   'libisar_x86_64-apple-darwin.dylib':
-      '793253759fcc9e47d4350d22379895d954b608ff6d873cd3752fe4200eea3514',
+      '490f8a5f76366c4cdc87a8106ea4b09d5c0920c1a0a4734bf1dbf645b6863531',
   'libisar_x86_64-apple-ios.dylib':
-      '9cc555bfe0c4a58e9101deffda43efdfaa2c7a32f954856deebc7491b2a0093e',
+      'dd82347e1de0e14bb5de33ed6adaeaa842fe2376d664c563abff1dac92616d49',
   'libisar_x86_64-linux-android.so':
-      'adc09f435346f1becb71938f2856d5e40de7a1a3cc25e2142cf827a44f327645',
+      '68ae2094cf27f1e68e18c896bd6bfc9cc25651c10c32a162a9e11b6f7dd5a046',
   'libisar_x86_64-unknown-linux-gnu.so':
-      '2164d09e1608530535f641d0575f4a03614a5e339e555d0127f65b1807e8debe',
+      'e8e5a907df2544f5fa5d9657c23747d7b243c152f149ecccd30e374486e52786',
 };
