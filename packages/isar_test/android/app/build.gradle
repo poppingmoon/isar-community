@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.isar_community.isar_test"
-    compileSdkVersion 35
+    compileSdkVersion = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
