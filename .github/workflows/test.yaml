@@ -90,6 +90,9 @@ jobs:
           flutter-version: ${{ env.FLUTTER_OVERRIDE || vars.FLUTTER_VERSION }}
       - name: Prepare Build
         uses: ./.github/actions/prepare-build
+      - name: Allow long path
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
       - name: Display Rust version
         run: rustc --version && cargo --version
       - name: Build Isar Core
