@@ -36,3 +36,8 @@ dependency_overrides:
   isar_community_generator:
     path: ../isar_community_generator
   test_api: 0.7.7
+
+hooks:
+  user_defines:
+    isar_community:
+      local_build: true
