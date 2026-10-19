@@ -93,6 +93,7 @@ jobs:
         if: matrix.os == 'android'
         working-directory: packages/isar_community
         run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;${{ env.NDK_VERSION }}"
           NDK=$ANDROID_SDK_ROOT/ndk/${{ env.NDK_VERSION }}
           COMPILER_DIR=$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin
           echo archiver=$COMPILER_DIR/llvm-ar >> $GITHUB_OUTPUT
