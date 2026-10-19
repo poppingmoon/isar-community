@@ -415,14 +415,14 @@ packages:
       path: "../../packages/isar_community"
       relative: true
     source: path
-    version: "3.3.2"
+    version: "3.4.1"
   isar_community_generator:
     dependency: "direct dev"
     description:
       path: "../../packages/isar_community_generator"
       relative: true
     source: path
-    version: "3.3.2"
+    version: "3.4.1"
   json_annotation:
     dependency: "direct main"
     description:
