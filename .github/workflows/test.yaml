@@ -308,7 +308,7 @@ jobs:
       - name: Enable Swift Package Manager
         run: flutter config --enable-swift-package-manager
       - name: Start simulator
-        uses: futureware-tech/simulator-action@v5
+        uses: futureware-tech/simulator-action@v6
         with:
           model: 'iPhone 16'
           os_version: '>= 26.0'
