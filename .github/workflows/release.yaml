@@ -90,7 +90,7 @@ jobs:
           tag: ${{ github.ref }}
       - name: Upload extra binary to artifacts
         if: matrix.extra_artifact_name
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: ${{ matrix.extra_artifact_name }}
           path: ${{ matrix.extra_artifact_name }}
