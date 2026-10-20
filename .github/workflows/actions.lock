@@ -28,7 +28,6 @@ workflows:
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-java@v6.1.0'
         - 'codecov/codecov-action@v7.1.1'
-        - 'futureware-tech/simulator-action@v5'
         - 'futureware-tech/simulator-action@v6'
         - 'kylemayes/install-llvm-action@v2.0.9'
         - 'pyvista/setup-headless-display-action@v5.1.0'
@@ -109,11 +108,6 @@ dependencies:
         commit: 'sha1-6afc89df92d6eb3834022f73cd65adc8cdfcb92d'
         owner_id: 1609975
         repo_id: 320563763
-    'futureware-tech/simulator-action@v5':
-        ref: 'v5'
-        commit: 'sha1-e89aa8f93d3aec35083ff49d2854d07f7186f7f5'
-        owner_id: 15038798
-        repo_id: 356594772
     'futureware-tech/simulator-action@v6':
         ref: 'v6'
         commit: 'sha1-c768f52966d5f70335ec77881f9806b24a52f80e'
