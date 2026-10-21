@@ -200,10 +200,10 @@ packages:
     dependency: "direct main"
     description:
       name: font_awesome_flutter
-      sha256: b9011df3a1fa02993630b8fb83526368cf2206a711259830325bab2f1d2a4eb0
+      sha256: "09dcde8ab90ffae1a7d65ff2ef96fc62a17ad9d0ce7c127b317ded676b0d5935"
       url: "https://pub.dev"
     source: hosted
-    version: "10.12.0"
+    version: "11.0.0"
   glob:
     dependency: transitive
     description:
@@ -224,10 +224,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: f0b8d115a13ecf827013ec9fc883390ccc0e87a96ed5347a3114cac177ef18e8
+      sha256: e3cb3ee6b47fd2472c23de6da5744796a4da195137759ddb3fbcc9467b7b3c7d
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.0"
+    version: "8.2.1"
   graphs:
     dependency: transitive
     description:
@@ -282,7 +282,7 @@ packages:
       path: "../isar_community"
       relative: true
     source: path
-    version: "3.3.2"
+    version: "3.4.1"
   jni:
     dependency: transitive
     description:
