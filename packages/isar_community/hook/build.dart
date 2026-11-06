@@ -11,6 +11,7 @@ import 'package:path/path.dart' as path;
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
+    if (!input.config.buildCodeAssets) return;
     final localBuild = input.userDefines['local_build'] as bool? ?? false;
     if (localBuild) {
       await runBuild(input, output);
