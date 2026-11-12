@@ -144,6 +144,6 @@ jobs:
         uses: actions/download-artifact@v8.0.2
 
       - name: Release
-        uses: softprops/action-gh-release@v3.0.3
+        uses: softprops/action-gh-release@v3.0.4
         with:
           files: '**'
