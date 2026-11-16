@@ -82,7 +82,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Dart
-        uses: dart-lang/setup-dart@v1.8.1
+        uses: dart-lang/setup-dart@v1.8.2
 
       - name: Get dependencies
         working-directory: packages/isar_community
