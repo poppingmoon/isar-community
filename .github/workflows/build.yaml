@@ -36,29 +36,6 @@ jobs:
             os: linux
             architecture: arm64
             target-triple: aarch64-unknown-linux-gnu
-          - runner: macos-latest
-            os: macos
-            architecture: arm64
-            target-triple: aarch64-apple-darwin
-          - runner: macos-latest
-            os: macos
-            architecture: x64
-            target-triple: x86_64-apple-darwin
-          - runner: macos-latest
-            os: ios
-            ios-sdk: iphoneos
-            architecture: arm64
-            target-triple: aarch64-apple-ios
-          - runner: macos-latest
-            os: ios
-            ios-sdk: iphonesimulator
-            architecture: arm64
-            target-triple: aarch64-apple-ios-sim
-          - runner: macos-latest
-            os: ios
-            ios-sdk: iphonesimulator
-            architecture: x64
-            target-triple: x86_64-apple-ios
           - runner: windows-latest
             os: windows
             architecture: arm64
@@ -72,9 +49,6 @@ jobs:
     env:
       ANDROID_TARGET_NDK_API: 24
       NDK_VERSION: 28.2.13676358
-      IOS_TARGET_VERSION: 13
-      IPHONEOS_DEPLOYMENT_TARGET: 13.0
-      MACOS_TARGET_VERSION: 11
 
     steps:
       - uses: actions/checkout@v7.0.1
@@ -115,9 +89,6 @@ jobs:
           --os ${{ matrix.os }}
           --architecture ${{ matrix.architecture }}
           ${{ case(matrix.os == 'android', format('--android-target-ndk-api {0}', env.ANDROID_TARGET_NDK_API), '') }}
-          ${{ case(matrix.os == 'ios', format('--ios-sdk {0}', matrix.ios-sdk), '') }}
-          ${{ case(matrix.os == 'ios', format('--ios-target-version {0}', env.IOS_TARGET_VERSION), '') }}
-          ${{ case(matrix.os == 'macos', format('--macos-target-version {0}', env.MACOS_TARGET_VERSION), '') }}
           ${{ case(matrix.os == 'android', format('--archiver {0}', steps.get-compiler-path.outputs.archiver), '') }}
           ${{ case(matrix.os == 'android', format('--compiler {0}', steps.get-compiler-path.outputs.compiler), '') }}
           ${{ case(matrix.os == 'android', format('--linker {0}', steps.get-compiler-path.outputs.linker), '') }}
@@ -128,8 +99,99 @@ jobs:
         with:
           path: |
             packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.dll
-            packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.dylib
             packages/isar_community/.dart_tool/isar_community/**/target/${{ matrix.target-triple }}/release/*.so
+          archive: false
+
+  build-macos:
+    runs-on: macos-latest
+
+    permissions:
+      contents: write
+
+    env:
+      IOS_TARGET_VERSION: 13
+      IPHONEOS_DEPLOYMENT_TARGET: 13.0
+      MACOS_TARGET_VERSION: 11
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1.8.2
+
+      - name: Get dependencies
+        working-directory: packages/isar_community
+        run: dart pub get
+
+      - parallel:
+        - name: Build
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os macos
+            --architecture arm64
+            --macos-target-version ${{ env.MACOS_TARGET_VERSION }}
+            --add-target-triple
+
+        - name: Build aarch64-apple-darwin
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os macos
+            --architecture arm64
+            --macos-target-version ${{ env.MACOS_TARGET_VERSION }}
+            --add-target-triple
+
+        - name: Build x86_64-apple-darwin
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os macos
+            --architecture x64
+            --macos-target-version ${{ env.MACOS_TARGET_VERSION }}
+            --add-target-triple
+
+        - name: Build aarch64-apple-ios
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os ios
+            --architecture arm64
+            --ios-sdk iphoneos
+            --ios-target-version ${{ env.IOS_TARGET_VERSION }}
+            --add-target-triple
+
+        - name: Build aarch64-apple-ios-sim
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os ios
+            --architecture arm64
+            --ios-sdk iphonesimulator
+            --ios-target-version ${{ env.IOS_TARGET_VERSION }}
+            --add-target-triple
+
+        - name: Build x86_64-apple-ios
+          working-directory: packages/isar_community
+          run: >
+            dart tool/build.dart
+            --os ios
+            --architecture x64
+            --ios-sdk iphonesimulator
+            --ios-target-version ${{ env.IOS_TARGET_VERSION }}
+            --add-target-triple
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          path: |
+            packages/isar_community/.dart_tool/isar_community/**/target/aarch64-apple-darwin/release/*.dylib
+            packages/isar_community/.dart_tool/isar_community/**/target/x86_64-apple-darwin/release/*.dylib
+            packages/isar_community/.dart_tool/isar_community/**/target/aarch64-apple-ios/release/*.dylib
+            packages/isar_community/.dart_tool/isar_community/**/target/aarch64-apple-ios-sim/release/*.dylib
+            packages/isar_community/.dart_tool/isar_community/**/target/x86_64-apple-ios/release/*.dylib
           archive: false
 
   release:
